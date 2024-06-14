@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+
+  "name": "Polybrain",
+  "description": "An OnShape plugin for AI-generated CAD",
+  "version": "1.0",
+
+  "options_ui": {
+    "page": "options.html"
+  },
+
+  "action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [
+      {
+          "matches": ["<all_urls>"],
+          "js": ["js/vendor.js", "js/content_script.js"]
+      }
+  ],
+
+  "background": {
+    "service_worker": "js/background.js"
+  },
+
+  "permissions": [
+    "storage", "tabs", "activeTab", "scripting"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
