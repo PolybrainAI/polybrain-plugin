@@ -7,12 +7,14 @@ function triggerContentScriptFunction(tabId: number) {
   });
 }
 
-
 /// Wait for OnShape to open
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log("got tab update")
-  if (changeInfo.status === 'complete' && tab.url?.includes("cad.onshape.com")) {
-    console.log("background listener found cad.onshape.com opened")
+  console.log("got tab update");
+  if (
+    changeInfo.status === "complete" &&
+    tab.url?.includes("cad.onshape.com")
+  ) {
+    console.log("background listener found cad.onshape.com opened");
     triggerContentScriptFunction(tabId);
   }
 });
