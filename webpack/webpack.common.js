@@ -13,7 +13,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, "../dist/js"),
     filename: "[name].js",
-    publicPath: '/public/'
+    publicPath: "/public/",
   },
   optimization: {
     splitChunks: {
@@ -32,14 +32,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.svg$/,
-        type: 'asset/resource',
+        type: "asset/resource",
       },
     ],
   },
@@ -49,7 +46,10 @@ module.exports = {
 
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: ".", to: "../", context: "public" }, {from: 'src/assets', to: '../assets'}],
+      patterns: [
+        { from: ".", to: "../", context: "public" },
+        { from: "src/assets", to: "../assets" },
+      ],
       options: {},
     }),
   ],

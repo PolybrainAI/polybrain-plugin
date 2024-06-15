@@ -1,39 +1,70 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"); /* Bootstrap Icons */
+
 #polybrain-assistant {
-    position: fixed;
-    bottom: 60px;
-    right: 10px;
+  position: fixed;
+  bottom: 60px;
+  right: 10px;
 }
 #primary-button {
-    position: absolute;
-    width: 45px;
-    height: 45px;
-    right: 20px;
-    bottom: 6px;
-    z-index: 10;
-    opacity: 80%;
-    transform: scale(1.2);
-    padding: 0;
-    border: none;
-    transition: 0.3s;
-    border-radius: 100px;
-    background-color: transparent;
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  right: 20px;
+  bottom: 6px;
+  z-index: 10;
+  opacity: 80%;
+  transform: scale(1.2);
+  padding: 0;
+  border: none;
+  transition: 0.3s;
+  border-radius: 100px;
+  background-color: transparent;
 }
 
-#primary-button:hover {
-    opacity: 100%;
-    transform: scale(1.3);
+#primary-button.hover {
+  height: 60px;
+  opacity: 100%;
+  transform: scale(1.3);
 }
 
 #primary-button-icon {
-    position: absolute;
-    width: 100%;
-    right: 0px;
-    bottom: 0px;
-    z-index: 15;
-    aspect-ratio: 1;
+  position: absolute;
+  width: 100%;
+  right: 0px;
+  bottom: 0px;
+  z-index: 15;
+  aspect-ratio: 1;
 }
 
-.fade-hover {
-    opacity: 100%;
-    transform: scale(1);
+#hover-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 85px;
+  padding: 0px 10px 0px 10px;
+  position: absolute;
+  right: 1px;
+  bottom: 70px;
+  transition: 0.3s;
+}
+
+#hover-menu .hover-menu-button {
+  z-index: 15;
+  color: white;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  transition: 0.2s;
+}
+
+#hover-menu .hover-menu-button:hover{
+    background-color: #FFFFFF1A;
+}
+
+#hover-menu .background {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 10;
 }
