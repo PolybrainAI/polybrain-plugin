@@ -39,9 +39,8 @@
 #hover-menu {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 85px;
-  padding: 0px 10px 0px 10px;
   position: absolute;
   right: 1px;
   bottom: 70px;

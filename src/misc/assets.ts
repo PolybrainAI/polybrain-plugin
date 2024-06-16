@@ -5,3 +5,4 @@ const get = (file: string): string => {
 export const baseButton = get("button-plain.svg");
 export const logoNoBackground = get("logo-no-background.svg");
 export const popupLogo = get("popup-menu.svg");
+export const micIcon = get("mic-icon.svg");
