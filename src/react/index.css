@@ -61,6 +61,13 @@
 #hover-menu .hover-menu-button:hover {
   background-color: #ffffff1a;
 }
+#hover-menu .hover-menu-button:disabled {
+  opacity: 50%;
+  cursor: not-allowed;
+}
+#hover-menu .hover-menu-button:hover:disabled {
+  background-color: transparent;
+}
 
 #hover-menu .background {
   position: absolute;
