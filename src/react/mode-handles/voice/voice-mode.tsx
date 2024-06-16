@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { startConversation } from "../../api/conversation";
-import { micIcon } from "../../misc/assets";
+import { startConversation } from "../../../api/conversation";
+import { micIcon } from "../../../misc/assets";
 
 
 export default function VoiceMode(props: {enabled: boolean, setIcon: (icon: string) => void, onReturn: () => void}){

@@ -8,7 +8,8 @@ import React, { useEffect, useState } from "react";
 import "./index.css";
 import { baseButton, logoNoBackground } from "../misc/assets";
 import HoverMenu from "./compnents/hover-menu";
-import VoiceMode from "./compnents/voice-mode";
+import VoiceMode from "./mode-handles/voice/voice-mode";
+import TextMode from "./mode-handles/text/text-mode";
 
 export type setFunction<T> = (state: T) => void;
 export enum SelectedMode{
@@ -79,6 +80,7 @@ export default function App() {
 
       {/* Dispatch selection to the different modes */}
       <VoiceMode enabled={selectedMode === SelectedMode.Voice} setIcon={setActiveIcon} onReturn={()=>{setSelectedMode(SelectedMode.None)}}/>
+      <TextMode enabled={selectedMode === SelectedMode.Text} setIcon={setActiveIcon} onReturn={()=>{setSelectedMode(SelectedMode.None)}}/>
 
 
 
