@@ -12,18 +12,17 @@ import VoiceMode from "./mode-handles/voice/voice-mode";
 import TextMode from "./mode-handles/text/text-mode";
 
 export type setFunction<T> = (state: T) => void;
-export enum SelectedMode{
+export enum SelectedMode {
   None,
   Voice,
   Text,
-  Settings
+  Settings,
 }
-export enum MenuState{
+export enum MenuState {
   None,
   Default,
-  Voice
+  Voice,
 }
-
 
 export default function App() {
   const [activeIcon, setActiveIcon] = useState<string>(logoNoBackground);
@@ -32,31 +31,32 @@ export default function App() {
   const [menuHovered, setMenuHovered] = useState(false); // state of the hover menu being hovered
 
   const [menuVisible, setMenuVisible] = useState(false); // visibility of the hover menu
-  const [menuType, setMenuType] = useState<MenuState>(MenuState.Default) // type of hover menu
+  const [menuType, setMenuType] = useState<MenuState>(MenuState.Default); // type of hover menu
 
-  const [selectedMode, setSelectedMode] = useState<SelectedMode>(SelectedMode.None); // mode of the main chain (voice, text, etc.)
+  const [selectedMode, setSelectedMode] = useState<SelectedMode>(
+    SelectedMode.None,
+  ); // mode of the main chain (voice, text, etc.)
 
   useEffect(() => {
     setMenuVisible(buttonHovered || menuHovered);
 
-    if (selectedMode === SelectedMode.Voice){
-      setMenuType(MenuState.Voice)
+    if (selectedMode === SelectedMode.Voice) {
+      setMenuType(MenuState.Voice);
+    } else if (selectedMode == SelectedMode.None) {
+      setActiveIcon(logoNoBackground);
+      setMenuType(MenuState.Default);
+    } else {
+      setMenuType(MenuState.None);
     }
-    else if (selectedMode == SelectedMode.None){
-      setActiveIcon(logoNoBackground)
-      setMenuType(MenuState.Default)
-    }
-    else {
-      setMenuType(MenuState.None)
-    }
-
   });
 
   return (
     <div style={{ position: "relative" }}>
       <button
         id="primary-button"
-        className={(menuVisible || (selectedMode !== SelectedMode.None)) ? "hover" : ""}
+        className={
+          menuVisible || selectedMode !== SelectedMode.None ? "hover" : ""
+        }
         onMouseEnter={() => {
           setButtonHovered(true);
         }}
@@ -76,14 +76,28 @@ export default function App() {
         />
       </button>
 
-      <HoverMenu visible={menuVisible} triggerMenuHovered={setMenuHovered} setMode={setSelectedMode} menuState={menuType} />
+      <HoverMenu
+        visible={menuVisible}
+        triggerMenuHovered={setMenuHovered}
+        setMode={setSelectedMode}
+        menuState={menuType}
+      />
 
       {/* Dispatch selection to the different modes */}
-      <VoiceMode enabled={selectedMode === SelectedMode.Voice} setIcon={setActiveIcon} onReturn={()=>{setSelectedMode(SelectedMode.None)}}/>
-      <TextMode enabled={selectedMode === SelectedMode.Text} setIcon={setActiveIcon} onReturn={()=>{setSelectedMode(SelectedMode.None)}}/>
-
-
-
+      <VoiceMode
+        enabled={selectedMode === SelectedMode.Voice}
+        setIcon={setActiveIcon}
+        onReturn={() => {
+          setSelectedMode(SelectedMode.None);
+        }}
+      />
+      <TextMode
+        enabled={selectedMode === SelectedMode.Text}
+        setIcon={setActiveIcon}
+        onReturn={() => {
+          setSelectedMode(SelectedMode.None);
+        }}
+      />
     </div>
   );
 }
