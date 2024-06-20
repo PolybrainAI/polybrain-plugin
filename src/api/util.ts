@@ -54,3 +54,16 @@ export async function getUserInfo(): Promise<UserInfo | null> {
     }
     }
   }
+
+
+export function extractDocumentId() {
+    const url = window.location.href;
+    const regex = /documents\/([a-f0-9]{24})/;
+    const match = url.match(regex);
+    if (match) {
+        return match[1];
+    } else {
+        console.debug(`Unable to extract document id from the url ${url}`)
+        return null;
+    }
+}
