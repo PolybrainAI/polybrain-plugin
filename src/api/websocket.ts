@@ -1,7 +1,7 @@
 
 
 import EventEmitter from "events";
-import { SessionStartRequest, SessionStartResponse } from "./types";
+import { ServerResponse, SessionStartRequest, SessionStartResponse, UserInputResponse } from "./types";
 import { extractDocumentId, getCookie } from "./util";
 
 const bus = new EventEmitter();
@@ -29,9 +29,9 @@ async function sendMessage<T>(socket: WebSocket, payload: T) {
 
 
 export async function setupCallbacks(
-    getUserInput: (prompt: string) => string,
-    onModelInfo: (message: string) => void,
-
+    getUserInput: (prompt: string) => Promise<string>,
+    onModelInfo: (message: string) => Promise<void>,
+    onModelFinal: (message: string) => Promise<void>,
 ){
 
     const userCooke = await getCookie();
@@ -70,9 +70,33 @@ export async function setupCallbacks(
     const startResponse = await waitForMessage<SessionStartResponse>(socket);
     const sessionId = startResponse.session_id;
 
-    for (;;){
+    // dispatch incoming messages
+    while (socket.readyState === socket.OPEN){
 
+        const incoming = await waitForMessage<ServerResponse>(socket);
+
+        switch (incoming.response_type) {
+            case "Query":
+                const user_input = await getUserInput(incoming.content);
+                const response: UserInputResponse = {
+                    response: user_input
+                } 
+                await sendMessage(socket, response);
+                break;
+            case "Info":
+                await onModelInfo(incoming.content);
+                break;
+            case "Final":
+                await onModelFinal(incoming.content);
+                socket.close();
+                break;       
+            default:
+                console.error(`Illegal ws response type "${incoming.response_type}"`);
+                break;
+        }
     }
+    
+    socket.close()
 
 
 }   

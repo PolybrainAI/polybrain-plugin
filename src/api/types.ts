@@ -21,9 +21,6 @@ export interface SessionStartResponse{
 export interface UserPromptInitial{
   contents: string
 }
-export interface UserInputQuery{
-  query: string
-}
 export interface UserInputResponse{
   response: string
 }
