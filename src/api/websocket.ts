@@ -1,21 +1,24 @@
 
 
 import EventEmitter from "events";
-import { ServerResponse, SessionStartRequest, SessionStartResponse, UserInputResponse } from "./types";
+import { ServerResponse, SessionStartRequest, SessionStartResponse, UserInputResponse, UserPromptInitial } from "./types";
 import { extractDocumentId, getCookie } from "./util";
 
 const bus = new EventEmitter();
 
 async function waitForMessage<T>(socket: WebSocket): Promise<T>{
-    var payload: any = null
+    var payload: T|null = null
 
-    socket.addEventListener("message", (event) => {
-        payload = JSON.parse(event.data)
-        bus.emit("recv");
-      });
-
-    await new Promise(resolve => bus.once('recv', resolve));
-
+    while (payload === null){
+        socket.addEventListener("message", (event) => {
+            payload = JSON.parse(event.data)
+            bus.emit("recv");
+          });
+    
+        await new Promise(resolve => bus.once('recv', resolve));
+    
+    }
+    
     console.log("Incoming ws message:");
     console.log(payload);
 
@@ -28,7 +31,8 @@ async function sendMessage<T>(socket: WebSocket, payload: T) {
 }
 
 
-export async function setupCallbacks(
+export async function websocketListen(
+    initialPrompt: string,
     getUserInput: (prompt: string) => Promise<string>,
     onModelInfo: (message: string) => Promise<void>,
     onModelFinal: (message: string) => Promise<void>,
@@ -59,8 +63,6 @@ export async function setupCallbacks(
 
     console.log("connected to ws")
     
-    
-
     const startRequest: SessionStartRequest = {
         user_token: userCooke,
         onshape_document_id: documentId
@@ -69,6 +71,12 @@ export async function setupCallbacks(
 
     const startResponse = await waitForMessage<SessionStartResponse>(socket);
     const sessionId = startResponse.session_id;
+
+    // send initial prompt
+    const intialPromptMessage: UserPromptInitial = {
+        contents: initialPrompt
+    };
+    await sendMessage(socket, intialPromptMessage);
 
     // dispatch incoming messages
     while (socket.readyState === socket.OPEN){
@@ -95,7 +103,7 @@ export async function setupCallbacks(
                 break;
         }
     }
-    
+
     socket.close()
 
 

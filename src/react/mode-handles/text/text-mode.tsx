@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import EventEmitter from "events";
 import { logoCircle, userIcon } from "../../../misc/assets";
 import MessageDisplay from "./message-display";
+import { websocketListen } from "../../../api/websocket";
 
 export interface Message {
   name: string;
@@ -14,15 +16,90 @@ export default function TextMode(props: {
   onReturn: () => void;
 }) {
   const chatWindow = useRef<HTMLDivElement>(null);
-
+  
   const [value, setValue] = useState("");
   const [textboxSelected, setTextboxSelected] = useState(false);
+  const [textboxAvailable, setTextboxAvailable] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesRef = useRef<Message[]>([]); // fix because react is weird
 
+
+  
   function appendMessage(msg: Message) {
-    setMessages([...messages, msg]);
+    messagesRef.current.push(msg);
+    setMessages(messagesRef.current);
   }
+  
+  const bus = useRef<null| EventEmitter>(null);
+
+  useEffect(()=>{
+    bus.current = new EventEmitter();
+    console.log("refreshing?")
+  },[])
+
+
+  function addUserMessage() {
+    if (value.trim() === "") {
+      return;
+    }
+
+    const newMessage: Message = {
+      name: "You", // todo: get name from api
+      content: value,
+      imageRef: userIcon,
+    };
+    const messageContent = value;
+    
+    appendMessage(newMessage);
+    setValue("");
+    
+    bus.current?.emit("messageSent", messageContent); // Pass the message content with the event
+    console.log(`User added message: ${value}`)
+
+  }
+
+  async function waitForMessage(): Promise<string>{
+    setTextboxAvailable(true);
+    console.log("waiting for message")
+    const messageContent: string = await new Promise(resolve => bus.current?.once('messageSent', resolve));
+
+    setTextboxAvailable(false);
+    return messageContent
+  }
+
+  async function beginChain(){
+
+    addServerMessage("Hello! How can I help you?")
+
+    const initialPrompt = await waitForMessage()
+
+    async function getUserInput(prompt: string): Promise<string> {
+      addServerMessage(prompt);
+      return waitForMessage()
+    }
+  
+    async function onModelInfo(info: string): Promise<void> {
+      console.log(`incoming model info: ${info}`);
+      addServerMessage(info);
+    }
+  
+    async function onModelFinal(message: string): Promise<void> {
+      console.log(`chain finished with message: ${message}`);
+      addServerMessage(message)
+    }
+
+    await websocketListen(
+      initialPrompt,
+      getUserInput,
+      onModelInfo,
+      onModelFinal
+    );
+  }
+
+  useEffect(()=>{
+    beginChain()
+  },[])
 
   useEffect(() => {
     if (textareaRef.current !== null) {
@@ -37,19 +114,16 @@ export default function TextMode(props: {
     }
   }, [value]);
 
-  function addNewMessage() {
-    if (value.trim() === "") {
-      return;
+  function addServerMessage(message: string) {
+    const serverMessage: Message = {
+      name: "Polybrain",
+      content: message,
+      imageRef: logoCircle
     }
+    appendMessage(serverMessage);
 
-    const newMessage: Message = {
-      name: "You", // todo: get name from api
-      content: value,
-      imageRef: userIcon,
-    };
+    console.log(`Added server message: ${message}`);
 
-    appendMessage(newMessage);
-    setValue("");
   }
 
   return (
@@ -72,32 +146,30 @@ export default function TextMode(props: {
         <MessageDisplay messages={messages} />
 
         <div id="chat-input" className={textboxSelected ? "selected" : ""}>
-          {/* <input type="text" value={messageInputText} placeholder="Message Polybrain" onChange={(ev) => {setMessageInputText(ev.target.value)}} /> */}
 
           <textarea
             ref={textareaRef}
+            disabled={!textboxAvailable}
             placeholder="Message Polybrain"
             value={value}
             onKeyDown={(ev) => {
               if (ev.key === "Enter") {
-                addNewMessage();
+                addUserMessage();
               }
             }}
             onChange={(ev) => {
               setValue(ev.target.value.replace("\n", ""));
             }}
             onFocus={() => {
-              console.log("focused!!! s3");
               setTextboxSelected(true);
             }}
             onBlur={() => {
-              console.log("unfocused");
               setTextboxSelected(false);
             }}
             rows={1}
           />
 
-          <button id="chat-input-send" onClick={addNewMessage}>
+          <button id="chat-input-send" onClick={addUserMessage}>
             <i className="bi bi-send"></i>
           </button>
         </div>

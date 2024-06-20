@@ -10,18 +10,19 @@ export async function getCookie(): Promise<string | null> {
     const bus = new EventEmitter();
     var token: string|null = null;
 
-    chrome.cookies.get({ url: 'https://polybrain.xyz', name: 'polybrain-session' },
-        function (cookie) {
-          if (cookie) {
-            console.log(cookie.value);
-            token = cookie.value;
-            bus.emit("resolved");
+    chrome.runtime.sendMessage({action: 'fetchCookie', cookieName: "polybrain-session"}, (response) => {
+        console.log("response is:");
+        console.log(response);
+        if (response.status === 'success') {
+          console.log('cookie fetch returned successful');
+          token = response.token;
+          console.log(token);
+          bus.emit("resolved")
+        } else {
+            console.log('cookie fetch returned failed');
+            token = response.token;
+            bus.emit("resolved")
         }
-        else {
-            console.log('Can\'t get cookie! Check the name!');
-            token = "nada";
-            bus.emit("resolved");
-          }
       });
 
     await new Promise(resolve => bus.once('resolved', resolve));

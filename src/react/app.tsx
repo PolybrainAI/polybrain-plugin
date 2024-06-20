@@ -10,7 +10,7 @@ import { baseButton, logoNoBackground } from "../misc/assets";
 import HoverMenu from "./compnents/hover-menu";
 import VoiceMode from "./mode-handles/voice/voice-mode";
 import TextMode from "./mode-handles/text/text-mode";
-import { setupCallbacks } from "../api/websocket";
+import { websocketListen } from "../api/websocket";
 
 export type setFunction<T> = (state: T) => void;
 export enum SelectedMode {
@@ -50,11 +50,6 @@ export default function App() {
       setMenuType(MenuState.None);
     }
   });
-
-
-  useEffect(()=>{
-    setupCallbacks();
-  },[])
 
   return (
     <div style={{ position: "relative" }}>
