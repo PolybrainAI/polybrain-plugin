@@ -86,7 +86,7 @@ export default function TextMode(props: {
   
     async function onModelFinal(message: string): Promise<void> {
       console.log(`chain finished with message: ${message}`);
-      addServerMessage(message)
+      addServerMessage(message);
     }
 
     await websocketListen(
@@ -145,7 +145,7 @@ export default function TextMode(props: {
 
         <MessageDisplay messages={messages} />
 
-        <div id="chat-input" className={textboxSelected ? "selected" : ""}>
+        <div id="chat-input" className={(textboxSelected ? "selected" : "") + (textboxAvailable ? "" : " disabled")}>
 
           <textarea
             ref={textareaRef}
@@ -169,7 +169,7 @@ export default function TextMode(props: {
             rows={1}
           />
 
-          <button id="chat-input-send" onClick={addUserMessage}>
+          <button id="chat-input-send" disabled={!textboxAvailable} onClick={addUserMessage}>
             <i className="bi bi-send"></i>
           </button>
         </div>
