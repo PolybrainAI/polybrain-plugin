@@ -136,8 +136,11 @@ export default function TextMode(props: {
   }
 
   useEffect(() => {
-    beginChain();
-  }, []);
+    if (props.enabled){
+      console.log("beginning text chain")
+      beginChain();
+    }
+  }, [props.enabled]);
 
   // Autocross chat window to bottom on each render
   useEffect(() => {

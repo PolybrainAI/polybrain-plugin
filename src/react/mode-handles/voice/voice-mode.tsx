@@ -6,7 +6,7 @@ import { websocketListen } from "../../../api/websocket";
 
 export default function VoiceMode(props: {
   enabled: boolean;
-  setIcon: (icon: string) => void;
+  setIcon: (icon: string) => Promise<void>;
   onReturn: () => void;
 }) {
   const isEnabled = useRef(false);
@@ -16,8 +16,8 @@ export default function VoiceMode(props: {
    * @param message The message to speak
    */
   async function speak(message: string) {
-    await play_audio(message, () => {
-      props.setIcon(speakerIcon);
+    await play_audio(message, async () => {
+      await props.setIcon(speakerIcon);
     });
   }
 
@@ -28,9 +28,9 @@ export default function VoiceMode(props: {
    */
   async function getUserInput(prompt: string): Promise<string> {
     await speak(prompt);
-    props.setIcon(micIcon);
+    await props.setIcon(micIcon);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    props.setIcon(loadingAnim);
+    await props.setIcon(loadingAnim);
     return "temp";
   }
 
@@ -41,7 +41,7 @@ export default function VoiceMode(props: {
   async function onModelInfo(info: string): Promise<void> {
     console.log(`incoming model info: ${info}`);
     await speak(info);
-    props.setIcon(loadingAnim);
+    await props.setIcon(loadingAnim);
   }
 
   /**
@@ -58,8 +58,8 @@ export default function VoiceMode(props: {
    * Starts the conversation chain over websocket
    */
   async function beginChain() {
+    await props.setIcon(loadingAnim);
     const initialPrompt = await getUserInput("Hello! How can I help you?");
-    props.setIcon(loadingAnim);
 
     await websocketListen(
       initialPrompt,
@@ -70,8 +70,11 @@ export default function VoiceMode(props: {
   }
 
   useEffect(() => {
-    beginChain();
-  }, []);
+    if (props.enabled){
+      console.log("beginning voice chain")
+      beginChain();
+    }
+  }, [props.enabled]);
 
   useEffect(() => {
     if (props.enabled !== isEnabled.current) {
