@@ -15,50 +15,74 @@ export default function TextMode(props: {
   setIcon: (icon: string) => void;
   onReturn: () => void;
 }) {
-  const chatWindow = useRef<HTMLDivElement>(null);
   
-  const [value, setValue] = useState("");
-  const [textboxSelected, setTextboxSelected] = useState(false);
-  const [textboxAvailable, setTextboxAvailable] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const chatWindow = useRef<HTMLDivElement>(null); // reference to the primary chat window
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesRef = useRef<Message[]>([]); // fix because react is weird
-
-
   
-  function appendMessage(msg: Message) {
+  const [textboxContent, setTextboxContent] = useState(""); // the contents of the textbox
+  const [textboxSelected, setTextboxSelected] = useState(false); // whether or not the user is selecting the textbox
+  const [textboxAvailable, setTextboxAvailable] = useState(false); // whether or no the textbox is enabled for messages
+  const textboxRef = useRef<HTMLTextAreaElement>(null); // a reference to the textbox
+
+  // Sets up a local event emitter
+  const bus = useRef<null| EventEmitter>(null);
+  useEffect(()=>{
+    bus.current = new EventEmitter();
+  },[])
+
+  /**
+   * Appends a new message to the list of messages
+   * @param msg The message to append to the window
+   */
+  function appendMessage(msg: Message): void {
     messagesRef.current.push(msg);
     setMessages(messagesRef.current);
   }
   
-  const bus = useRef<null| EventEmitter>(null);
-
-  useEffect(()=>{
-    bus.current = new EventEmitter();
-    console.log("refreshing?")
-  },[])
-
-
-  function addUserMessage() {
-    if (value.trim() === "") {
+  /**
+   * Converts the contents of the textbox into a user message. Clears textbox
+   * content and appends message in the process.
+   */
+  function addUserMessage(): void {
+    if (textboxContent.trim() === "") {
       return;
     }
 
     const newMessage: Message = {
       name: "You", // todo: get name from api
-      content: value,
+      content: textboxContent,
       imageRef: userIcon,
     };
-    const messageContent = value;
+    const messageContent = textboxContent;
     
     appendMessage(newMessage);
-    setValue("");
+    setTextboxContent("");
     
     bus.current?.emit("messageSent", messageContent); // Pass the message content with the event
-    console.log(`User added message: ${value}`)
+    console.log(`User added message: ${textboxContent}`)
+  }
+
+  /**
+   * Adds a message to the chat window from "Polybrain"
+   * @param message The contents of the message to add
+   */
+  function addServerMessage(message: string) {
+    const serverMessage: Message = {
+      name: "Polybrain",
+      content: message,
+      imageRef: logoCircle
+    }
+    appendMessage(serverMessage);
+
+    console.log(`Added server message: ${message}`);
 
   }
 
+  /**
+   * Wait for the user to input a message
+   * @returns The contents of the message
+   */
   async function waitForMessage(): Promise<string>{
     setTextboxAvailable(true);
     console.log("waiting for message")
@@ -68,26 +92,41 @@ export default function TextMode(props: {
     return messageContent
   }
 
+  /**
+   * Prompts the user for input
+   * @param prompt The message to prompt the user with
+   * @returns The user's response to the prompt
+   */
+  async function getUserInput(prompt: string): Promise<string> {
+    addServerMessage(prompt);
+    return waitForMessage()
+  }
+
+  /**
+   * Displays an intermediate info message in the chat window
+   * @param info The intermediate info message from the model
+   */
+  async function onModelInfo(info: string): Promise<void> {
+    console.log(`incoming model info: ${info}`);
+    addServerMessage(info);
+  }
+
+  /**
+   * Displays the final chain message in the chat windows
+   * @param message The final chat message
+   */
+  async function onModelFinal(message: string): Promise<void> {
+    console.log(`chain finished with message: ${message}`);
+    addServerMessage(message);
+  }
+
+  /**
+   * Begins the conversation chain on websocket
+   */
   async function beginChain(){
 
     addServerMessage("Hello! How can I help you?")
-
     const initialPrompt = await waitForMessage()
-
-    async function getUserInput(prompt: string): Promise<string> {
-      addServerMessage(prompt);
-      return waitForMessage()
-    }
-  
-    async function onModelInfo(info: string): Promise<void> {
-      console.log(`incoming model info: ${info}`);
-      addServerMessage(info);
-    }
-  
-    async function onModelFinal(message: string): Promise<void> {
-      console.log(`chain finished with message: ${message}`);
-      addServerMessage(message);
-    }
 
     await websocketListen(
       initialPrompt,
@@ -101,30 +140,18 @@ export default function TextMode(props: {
     beginChain()
   },[])
 
+  // Autocross chat window to bottom on each render
   useEffect(() => {
-    if (textareaRef.current !== null) {
-      // Temporarily set the height to 'auto' to allow shrinking
-      textareaRef.current.style.height = "auto";
-      // Set the height to the scrollHeight
-      var desiredHeight = textareaRef.current.scrollHeight;
+    if (textboxRef.current !== null) {
+      textboxRef.current.style.height = "auto";
+      var desiredHeight = textboxRef.current.scrollHeight;
       if (desiredHeight < 22) {
         desiredHeight = 22;
       }
-      textareaRef.current.style.height = `${desiredHeight}px`;
+      textboxRef.current.style.height = `${desiredHeight}px`;
     }
-  }, [value]);
+  }, [textboxContent]);
 
-  function addServerMessage(message: string) {
-    const serverMessage: Message = {
-      name: "Polybrain",
-      content: message,
-      imageRef: logoCircle
-    }
-    appendMessage(serverMessage);
-
-    console.log(`Added server message: ${message}`);
-
-  }
 
   return (
     <>
@@ -148,17 +175,17 @@ export default function TextMode(props: {
         <div id="chat-input" className={(textboxSelected ? "selected" : "") + (textboxAvailable ? "" : " disabled")}>
 
           <textarea
-            ref={textareaRef}
+            ref={textboxRef}
             disabled={!textboxAvailable}
             placeholder="Message Polybrain"
-            value={value}
+            value={textboxContent}
             onKeyDown={(ev) => {
               if (ev.key === "Enter") {
                 addUserMessage();
               }
             }}
             onChange={(ev) => {
-              setValue(ev.target.value.replace("\n", ""));
+              setTextboxContent(ev.target.value.replace("\n", ""));
             }}
             onFocus={() => {
               setTextboxSelected(true);
