@@ -32,6 +32,13 @@ textarea:disabled {
   transform: scale(1.3);
 }
 
+#primary-button-backing{
+  position: absolute;
+  width: 100%;
+  right: 0px;
+  bottom: 0px;
+}
+
 #primary-button-icon {
   position: absolute;
   width: 100%;

@@ -66,7 +66,7 @@ export default function App() {
         }}
       >
         <img
-          id="primary-button-icon"
+          id="primary-button-backing"
           src={baseButton}
           className={buttonHovered ? "fade-hover" : ""}
         />
