@@ -10,22 +10,22 @@ import { extractDocumentId, getCookie } from "./util";
 
 const bus = new EventEmitter();
 
-var message_queue: object[] = []
+var message_queue: object[] = [];
 
 async function waitForMessage<T>(socket: WebSocket): Promise<T> {
   var payload: T | null = null;
 
-  if (message_queue.length > 0){
+  if (message_queue.length > 0) {
     const recv = message_queue.pop();
-    payload = recv ? recv as T : null;
+    payload = recv ? (recv as T) : null;
   }
-  
+
   // if the payload is still null, wait for a new message
-  if (payload === null){
+  if (payload === null) {
     while (payload === null) {
       await new Promise((resolve) => bus.on("message", resolve));
       const recv = message_queue.pop();
-      payload = recv ? recv as T : null;
+      payload = recv ? (recv as T) : null;
     }
   }
 
@@ -76,8 +76,8 @@ export async function websocketListen(
 
   socket.addEventListener("message", (event) => {
     const payload = JSON.parse(event.data);
-    if (payload !== null){
-      message_queue.push(payload)
+    if (payload !== null) {
+      message_queue.push(payload);
       bus.emit("message");
     }
   });

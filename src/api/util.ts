@@ -75,7 +75,10 @@ export function extractDocumentId() {
   }
 }
 
-export async function play_audio(message: string, onSpeakingStart: () => Promise<void>) {
+export async function play_audio(
+  message: string,
+  onSpeakingStart: () => Promise<void>,
+) {
   const cookie = await getCookie();
 
   const response = await fetch(`${API_BASE}/api/audio/speak`, {
@@ -98,5 +101,5 @@ export async function play_audio(message: string, onSpeakingStart: () => Promise
   const audio = new Audio(audioUrl);
   await onSpeakingStart();
   audio.play();
-  await new Promise((resolve) => setTimeout(resolve, audio.duration*1000))
+  await new Promise((resolve) => setTimeout(resolve, audio.duration * 1000));
 }

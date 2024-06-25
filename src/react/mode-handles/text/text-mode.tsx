@@ -136,8 +136,8 @@ export default function TextMode(props: {
   }
 
   useEffect(() => {
-    if (props.enabled){
-      console.log("beginning text chain")
+    if (props.enabled) {
+      console.log("beginning text chain");
       beginChain();
     }
   }, [props.enabled]);

@@ -70,8 +70,8 @@ export default function VoiceMode(props: {
   }
 
   useEffect(() => {
-    if (props.enabled){
-      console.log("beginning voice chain")
+    if (props.enabled) {
+      console.log("beginning voice chain");
       beginChain();
     }
   }, [props.enabled]);
