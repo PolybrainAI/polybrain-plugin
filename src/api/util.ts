@@ -6,30 +6,34 @@ import EventEmitter from "events";
 import { UserInfo } from "./types";
 
 const API_BASE = "http://127.0.0.1:8000"
+window.polybrainCookie = null
 
+/**
+ * Fetches the polybrain cookie from the background process
+ * @returns The polybrain.xyz cookie
+ */
 export async function getCookie(): Promise<string | null> {
-
-    const bus = new EventEmitter();
-    var token: string|null = null;
-
-    chrome.runtime.sendMessage({action: 'fetchCookie', cookieName: "polybrain-session"}, (response) => {
-        console.log("response is:");
-        console.log(response);
-        if (response.status === 'success') {
-          console.log('cookie fetch returned successful');
-          token = response.token;
-          console.log(token);
-          bus.emit("resolved")
-        } else {
-            console.log('cookie fetch returned failed');
-            token = response.token;
-            bus.emit("resolved")
-        }
-      });
-
-    await new Promise(resolve => bus.once('resolved', resolve));
-
-    return token;
+    if (window.polybrainCookie === null) {
+        const bus = new EventEmitter();
+        var token: string|null = null;
+    
+        chrome.runtime.sendMessage({action: 'fetchCookie', cookieName: "polybrain-session"}, (response) => {
+            if (response.status === 'success') {
+              token = response.token;
+              bus.emit("resolved")
+            } else {
+                token = response.token;
+                bus.emit("resolved")
+            }
+          });
+    
+        await new Promise(resolve => bus.once('resolved', resolve));
+        window.polybrainCookie = token;
+        return token;
+    }
+    else {
+        return window.polybrainCookie
+    }
 }
 
 /**
@@ -71,7 +75,7 @@ export function extractDocumentId() {
     }
 }
 
-export async function speak(message: string) {
+export async function play_audio(message: string, onSpeakingStart: ()=>void) {
     const cookie = await getCookie()
 
     const response = await fetch(`${API_BASE}/api/audio/speak`, {
@@ -92,5 +96,6 @@ export async function speak(message: string) {
     const blob = await response.blob();
     const audioUrl = URL.createObjectURL(blob);
     const audio = new Audio(audioUrl);
+    onSpeakingStart()
     audio.play();
 }
