@@ -4,13 +4,14 @@ Entrypoint to react, injected by content_script.tsx
 
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./index.css";
 import { baseButton, logoNoBackground } from "../misc/assets";
 import HoverMenu from "./compnents/hover-menu";
 import VoiceMode from "./mode-handles/voice/voice-mode";
 import TextMode from "./mode-handles/text/text-mode";
 import { websocketListen } from "../api/websocket";
+import EventEmitter from "events";
 
 export type setFunction<T> = (state: T) => void;
 export enum SelectedMode {
@@ -40,6 +41,12 @@ export default function App() {
     SelectedMode.None,
   ); // mode of the main chain (voice, text, etc.)
 
+  // Sets up a local event emitter
+  const bus = useRef<null | EventEmitter>(null);
+  useEffect(() => {
+    bus.current = new EventEmitter();
+  }, []);
+
   /**
    * Sets the icon on the main plugin button. Adds in and out animations
    * @param icon The path to the icon to set
@@ -50,7 +57,6 @@ export default function App() {
     }
 
     const iconElement = document.getElementById("primary-button-icon");
-    console.log(`setting icon to ${iconPath}`);
 
     if (iconElement === null) {
       throw Error("Icon element cannot be null");
@@ -100,6 +106,7 @@ export default function App() {
         onMouseLeave={() => {
           setButtonHovered(false);
         }}
+        onClick={()=>{bus.current?.emit('click')}}
       >
         <img
           id="primary-button-backing"
@@ -124,6 +131,7 @@ export default function App() {
       <VoiceMode
         enabled={selectedMode === SelectedMode.Voice}
         setIcon={setIcon}
+        clickEmitter={bus.current}
         onReturn={() => {
           setSelectedMode(SelectedMode.None);
         }}

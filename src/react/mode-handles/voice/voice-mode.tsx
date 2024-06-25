@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { startConversation } from "../../../api/conversation";
 import { micIcon, speakerIcon, loadingAnim } from "../../../misc/assets";
-import { play_audio } from "../../../api/util";
+import { playSound, tts, recordAudio } from "../../../api/util";
 import { websocketListen } from "../../../api/websocket";
+import EventEmitter from "events";
 
 export default function VoiceMode(props: {
   enabled: boolean;
   setIcon: (icon: string) => Promise<void>;
+  clickEmitter: EventEmitter|null
   onReturn: () => void;
 }) {
   const isEnabled = useRef(false);
@@ -16,7 +17,7 @@ export default function VoiceMode(props: {
    * @param message The message to speak
    */
   async function speak(message: string) {
-    await play_audio(message, async () => {
+    await tts(message, async () => {
       await props.setIcon(speakerIcon);
     });
   }
@@ -28,10 +29,31 @@ export default function VoiceMode(props: {
    */
   async function getUserInput(prompt: string): Promise<string> {
     await speak(prompt);
-    await props.setIcon(micIcon);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    var input: string|null = null;
+    
+    while (input === null) {
+      input = await recordAudio(
+        // on record start
+        ()=>{
+          props.setIcon(micIcon)
+        },
+  
+        // stop record
+        async ()=>{
+          await new Promise((resolve) => props.clickEmitter?.on("click", resolve))
+        }
+      )
+
+      if (!input){
+        await speak("Hmm... Did you say something? I couldn't hear you.")
+      }
+    }
+
+    console.log(`User input is: ${input}`);
+
     await props.setIcon(loadingAnim);
-    return "temp";
+    return input;
   }
 
   /**

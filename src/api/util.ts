@@ -4,6 +4,7 @@
  */
 import EventEmitter from "events";
 import { UserInfo } from "./types";
+import { startRecord, stopRecord } from "../misc/assets";
 
 const API_BASE = "http://127.0.0.1:8000";
 window.polybrainCookie = null;
@@ -75,7 +76,7 @@ export function extractDocumentId() {
   }
 }
 
-export async function play_audio(
+export async function tts(
   message: string,
   onSpeakingStart: () => Promise<void>,
 ) {
@@ -102,4 +103,65 @@ export async function play_audio(
   await onSpeakingStart();
   audio.play();
   await new Promise((resolve) => setTimeout(resolve, audio.duration * 1000));
+}
+
+
+export function playSound(audioFile: string) {
+  const audio = new Audio(audioFile);
+  audio.play();
+}
+
+const SpeechRecognition = webkitSpeechRecognition;
+export async function recordAudio(onRecordStart: ()=>void, waitForStop: ()=>Promise<void>): Promise<string|null> {
+  if (!SpeechRecognition) {
+    throw new Error('Speech Recognition API is not supported in this browser.');
+  }
+
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.start();
+  onRecordStart()
+  playSound(startRecord);
+
+  var transcript: string|null = null;
+
+  recognition.onresult = (event) => {
+    console.log(event)
+    transcript = (!!transcript) ? transcript : "";
+    transcript += event.results[event.results.length-1][0].transcript;
+  };
+
+  recognition.onerror = (event) => {
+    console.error(`error occurred in recognition: ${event.error}`);
+  };
+
+  await waitForStop()
+  recognition.stop()
+  playSound(stopRecord)
+ 
+  if (!transcript) {
+
+    // wait a moment for transcript to come in, otherwise abort
+    transcript = await new Promise((resolve) => {
+
+      setTimeout(()=>{
+        resolve(null)
+      }, 2000)
+
+      recognition.onresult = (event) => {
+        resolve(event.results[0][0].transcript);
+      }
+    })
+  }
+
+  if (!transcript){
+    console.error("no audio"); 
+  }
+  return transcript
+
 }
