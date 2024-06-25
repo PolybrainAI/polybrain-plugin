@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { startConversation } from "../../../api/conversation";
 import { micIcon } from "../../../misc/assets";
+import { speak } from "../../../api/util";
 
 export default function VoiceMode(props: {
   enabled: boolean;
@@ -11,6 +12,7 @@ export default function VoiceMode(props: {
 
   // Start the vocal conversation chain
   function startChain() {
+    speak("The quick brown fox jumps over the lazy dog!");
     startConversation(
       () => {},
       (_) => {},
@@ -21,6 +23,7 @@ export default function VoiceMode(props: {
   }
 
   useEffect(() => {
+
     if (props.enabled !== isEnabled.current) {
       console.log(
         "Setting voice state to:" + (props.enabled ? "enabled" : "disabled"),

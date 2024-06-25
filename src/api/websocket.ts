@@ -18,7 +18,7 @@ async function waitForMessage<T>(socket: WebSocket): Promise<T>{
         await new Promise(resolve => bus.once('recv', resolve));
     
     }
-    
+
     console.log("Incoming ws message:");
     console.log(payload);
 
@@ -53,6 +53,11 @@ export async function websocketListen(
     
     console.log("connecting to ws...")
     const socket = new WebSocket("ws://127.0.0.1:6379");
+
+    // ensure socket closes on close
+    window.addEventListener("beforeunload", ()=>{
+        socket.close()
+    })
 
     socket.addEventListener("open", (event) => {
         bus.emit("connected");

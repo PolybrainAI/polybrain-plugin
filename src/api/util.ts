@@ -5,6 +5,8 @@
 import EventEmitter from "events";
 import { UserInfo } from "./types";
 
+const API_BASE = "http://127.0.0.1:8000"
+
 export async function getCookie(): Promise<string | null> {
 
     const bus = new EventEmitter();
@@ -67,4 +69,28 @@ export function extractDocumentId() {
         console.debug(`Unable to extract document id from the url ${url}`)
         return null;
     }
+}
+
+export async function speak(message: string) {
+    const cookie = await getCookie()
+
+    const response = await fetch(`${API_BASE}/api/audio/speak`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'text/plain;charset=UTF-8',
+            'Authorization': `Bearer ${cookie}`
+          },
+        body: JSON.stringify({
+            text: message
+        }),
+    })
+
+    if (!response.ok) {
+        throw new Error('API speech response was not ok ' + response.statusText);
+    }
+
+    const blob = await response.blob();
+    const audioUrl = URL.createObjectURL(blob);
+    const audio = new Audio(audioUrl);
+    audio.play();
 }
