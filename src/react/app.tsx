@@ -4,12 +4,14 @@ Entrypoint to react, injected by content_script.tsx
 
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./index.css";
 import { baseButton, logoNoBackground } from "../misc/assets";
 import HoverMenu from "./compnents/hover-menu";
 import VoiceMode from "./mode-handles/voice/voice-mode";
 import TextMode from "./mode-handles/text/text-mode";
+import { websocketListen } from "../api/websocket";
+import EventEmitter from "events";
 
 export type setFunction<T> = (state: T) => void;
 export enum SelectedMode {
@@ -24,6 +26,8 @@ export enum MenuState {
   Voice,
 }
 
+const ICON_TRANSITION_DURATION = 0.3; // seconds
+
 export default function App() {
   const [activeIcon, setActiveIcon] = useState<string>(logoNoBackground);
 
@@ -37,13 +41,52 @@ export default function App() {
     SelectedMode.None,
   ); // mode of the main chain (voice, text, etc.)
 
+  // Sets up a local event emitter
+  const bus = useRef<null | EventEmitter>(null);
+  useEffect(() => {
+    bus.current = new EventEmitter();
+  }, []);
+
+  /**
+   * Sets the icon on the main plugin button. Adds in and out animations
+   * @param icon The path to the icon to set
+   */
+  async function setIcon(iconPath: string): Promise<void> {
+    if (iconPath === activeIcon) {
+      return;
+    }
+
+    const iconElement = document.getElementById("primary-button-icon");
+
+    if (iconElement === null) {
+      throw Error("Icon element cannot be null");
+    }
+    iconElement.style.transition = `${ICON_TRANSITION_DURATION}s`;
+
+    // fade icon to nothing
+    iconElement.style.transform = "scale(0)";
+    iconElement.style.opacity = "0%";
+    await new Promise((resolve) =>
+      setTimeout(resolve, ICON_TRANSITION_DURATION * 1000),
+    );
+
+    setActiveIcon(iconPath); // chance icon
+
+    // fade back to normal
+    iconElement.style.transform = "scale(1)";
+    iconElement.style.opacity = "100%";
+    await new Promise((resolve) =>
+      setTimeout(resolve, ICON_TRANSITION_DURATION * 1000),
+    );
+  }
+
   useEffect(() => {
     setMenuVisible(buttonHovered || menuHovered);
 
     if (selectedMode === SelectedMode.Voice) {
       setMenuType(MenuState.Voice);
     } else if (selectedMode == SelectedMode.None) {
-      setActiveIcon(logoNoBackground);
+      setIcon(logoNoBackground);
       setMenuType(MenuState.Default);
     } else {
       setMenuType(MenuState.None);
@@ -63,9 +106,10 @@ export default function App() {
         onMouseLeave={() => {
           setButtonHovered(false);
         }}
+        onClick={()=>{bus.current?.emit('click')}}
       >
         <img
-          id="primary-button-icon"
+          id="primary-button-backing"
           src={baseButton}
           className={buttonHovered ? "fade-hover" : ""}
         />
@@ -86,14 +130,15 @@ export default function App() {
       {/* Dispatch selection to the different modes */}
       <VoiceMode
         enabled={selectedMode === SelectedMode.Voice}
-        setIcon={setActiveIcon}
+        setIcon={setIcon}
+        clickEmitter={bus.current}
         onReturn={() => {
           setSelectedMode(SelectedMode.None);
         }}
       />
       <TextMode
         enabled={selectedMode === SelectedMode.Text}
-        setIcon={setActiveIcon}
+        setIcon={setIcon}
         onReturn={() => {
           setSelectedMode(SelectedMode.None);
         }}

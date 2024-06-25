@@ -17,6 +17,7 @@
     "url": "https://github.com/PolybrainAI/polybrain-plugin.git"
   },
   "dependencies": {
+    "@types/dom-speech-recognition": "^0.0.4",
     "autoprefixer": "^10.4.19",
     "bootstrap-icons": "^1.11.3",
     "install": "^0.13.0",

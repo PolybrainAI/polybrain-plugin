@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Message } from "./text-mode";
 
@@ -24,15 +24,26 @@ export default function MessageDisplay(props: { messages: Array<Message> }) {
     );
   }
 
-  const messageElements = props.messages.map((message) =>
-    buildMessageElement(message),
-  );
+  const [messageElements, setMessageElements] = useState<
+    React.JSX.Element[] | null
+  >(null);
 
-  useEffect(() => {
+  function scrollToNewest() {
     var msgDisplay = document.getElementById("chat-message-display");
     if (msgDisplay) {
       msgDisplay.scrollTop = msgDisplay.scrollHeight;
     }
+  }
+
+  useEffect(() => {
+    setMessageElements(
+      props.messages.map((message) => buildMessageElement(message)),
+    );
+    scrollToNewest();
+  });
+
+  useEffect(() => {
+    scrollToNewest();
   }, [props.messages]);
 
   return <div id="chat-message-display">{messageElements}</div>;
