@@ -15,21 +15,20 @@ export default function TextMode(props: {
   setIcon: (icon: string) => void;
   onReturn: () => void;
 }) {
-  
   const chatWindow = useRef<HTMLDivElement>(null); // reference to the primary chat window
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesRef = useRef<Message[]>([]); // fix because react is weird
-  
+
   const [textboxContent, setTextboxContent] = useState(""); // the contents of the textbox
   const [textboxSelected, setTextboxSelected] = useState(false); // whether or not the user is selecting the textbox
   const [textboxAvailable, setTextboxAvailable] = useState(false); // whether or no the textbox is enabled for messages
   const textboxRef = useRef<HTMLTextAreaElement>(null); // a reference to the textbox
 
   // Sets up a local event emitter
-  const bus = useRef<null| EventEmitter>(null);
-  useEffect(()=>{
+  const bus = useRef<null | EventEmitter>(null);
+  useEffect(() => {
     bus.current = new EventEmitter();
-  },[])
+  }, []);
 
   /**
    * Appends a new message to the list of messages
@@ -39,7 +38,7 @@ export default function TextMode(props: {
     messagesRef.current.push(msg);
     setMessages(messagesRef.current);
   }
-  
+
   /**
    * Converts the contents of the textbox into a user message. Clears textbox
    * content and appends message in the process.
@@ -55,12 +54,12 @@ export default function TextMode(props: {
       imageRef: userIcon,
     };
     const messageContent = textboxContent;
-    
+
     appendMessage(newMessage);
     setTextboxContent("");
-    
+
     bus.current?.emit("messageSent", messageContent); // Pass the message content with the event
-    console.log(`User added message: ${textboxContent}`)
+    console.log(`User added message: ${textboxContent}`);
   }
 
   /**
@@ -71,25 +70,26 @@ export default function TextMode(props: {
     const serverMessage: Message = {
       name: "Polybrain",
       content: message,
-      imageRef: logoCircle
-    }
+      imageRef: logoCircle,
+    };
     appendMessage(serverMessage);
 
     console.log(`Added server message: ${message}`);
-
   }
 
   /**
    * Wait for the user to input a message
    * @returns The contents of the message
    */
-  async function waitForMessage(): Promise<string>{
+  async function waitForMessage(): Promise<string> {
     setTextboxAvailable(true);
-    console.log("waiting for message")
-    const messageContent: string = await new Promise(resolve => bus.current?.once('messageSent', resolve));
+    console.log("waiting for message");
+    const messageContent: string = await new Promise(
+      (resolve) => bus.current?.once("messageSent", resolve),
+    );
 
     setTextboxAvailable(false);
-    return messageContent
+    return messageContent;
   }
 
   /**
@@ -99,7 +99,7 @@ export default function TextMode(props: {
    */
   async function getUserInput(prompt: string): Promise<string> {
     addServerMessage(prompt);
-    return waitForMessage()
+    return waitForMessage();
   }
 
   /**
@@ -123,22 +123,21 @@ export default function TextMode(props: {
   /**
    * Begins the conversation chain on websocket
    */
-  async function beginChain(){
-
-    addServerMessage("Hello! How can I help you?")
-    const initialPrompt = await waitForMessage()
+  async function beginChain() {
+    addServerMessage("Hello! How can I help you?");
+    const initialPrompt = await waitForMessage();
 
     await websocketListen(
       initialPrompt,
       getUserInput,
       onModelInfo,
-      onModelFinal
+      onModelFinal,
     );
   }
 
-  useEffect(()=>{
-    beginChain()
-  },[])
+  useEffect(() => {
+    beginChain();
+  }, []);
 
   // Autocross chat window to bottom on each render
   useEffect(() => {
@@ -151,7 +150,6 @@ export default function TextMode(props: {
       textboxRef.current.style.height = `${desiredHeight}px`;
     }
   }, [textboxContent]);
-
 
   return (
     <>
@@ -172,8 +170,13 @@ export default function TextMode(props: {
 
         <MessageDisplay messages={messages} />
 
-        <div id="chat-input" className={(textboxSelected ? "selected" : "") + (textboxAvailable ? "" : " disabled")}>
-
+        <div
+          id="chat-input"
+          className={
+            (textboxSelected ? "selected" : "") +
+            (textboxAvailable ? "" : " disabled")
+          }
+        >
           <textarea
             ref={textboxRef}
             disabled={!textboxAvailable}
@@ -196,7 +199,11 @@ export default function TextMode(props: {
             rows={1}
           />
 
-          <button id="chat-input-send" disabled={!textboxAvailable} onClick={addUserMessage}>
+          <button
+            id="chat-input-send"
+            disabled={!textboxAvailable}
+            onClick={addUserMessage}
+          >
             <i className="bi bi-send"></i>
           </button>
         </div>

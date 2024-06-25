@@ -24,27 +24,26 @@ export default function MessageDisplay(props: { messages: Array<Message> }) {
     );
   }
 
+  const [messageElements, setMessageElements] = useState<
+    React.JSX.Element[] | null
+  >(null);
 
-  const [messageElements, setMessageElements] = useState<React.JSX.Element[]|null>(null)
-  
-
-  function scrollToNewest(){
+  function scrollToNewest() {
     var msgDisplay = document.getElementById("chat-message-display");
     if (msgDisplay) {
       msgDisplay.scrollTop = msgDisplay.scrollHeight;
     }
   }
 
-  useEffect(()=>{
-    setMessageElements(props.messages.map((message) =>
-      buildMessageElement(message),
-    ));
-    scrollToNewest();
-
-  })
-   
   useEffect(() => {
-    scrollToNewest()
+    setMessageElements(
+      props.messages.map((message) => buildMessageElement(message)),
+    );
+    scrollToNewest();
+  });
+
+  useEffect(() => {
+    scrollToNewest();
   }, [props.messages]);
 
   return <div id="chat-message-display">{messageElements}</div>;

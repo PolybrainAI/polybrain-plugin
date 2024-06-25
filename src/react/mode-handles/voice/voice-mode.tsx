@@ -15,21 +15,23 @@ export default function VoiceMode(props: {
    * Speaks a message. Updates icon when audio starts playing.
    * @param message The message to speak
    */
-  async function speak(message: string){
-    await play_audio(message, ()=>{props.setIcon(speakerIcon)})
+  async function speak(message: string) {
+    await play_audio(message, () => {
+      props.setIcon(speakerIcon);
+    });
   }
-  
+
   /**
    * Prompts the user to input a value
    * @param prompt The prompt to speak to the user
    * @returns The value that the user responded with
    */
   async function getUserInput(prompt: string): Promise<string> {
-    await speak(prompt)
-    props.setIcon(micIcon)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    props.setIcon(loadingAnim)
-    return "temp"
+    await speak(prompt);
+    props.setIcon(micIcon);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    props.setIcon(loadingAnim);
+    return "temp";
   }
 
   /**
@@ -38,8 +40,8 @@ export default function VoiceMode(props: {
    */
   async function onModelInfo(info: string): Promise<void> {
     console.log(`incoming model info: ${info}`);
-    await speak(info)
-    props.setIcon(loadingAnim)
+    await speak(info);
+    props.setIcon(loadingAnim);
   }
 
   /**
@@ -55,25 +57,23 @@ export default function VoiceMode(props: {
   /**
    * Starts the conversation chain over websocket
    */
-  async function beginChain(){
-
-    const initialPrompt = await getUserInput("Hello! How can I help you?")
-    props.setIcon(loadingAnim)
+  async function beginChain() {
+    const initialPrompt = await getUserInput("Hello! How can I help you?");
+    props.setIcon(loadingAnim);
 
     await websocketListen(
       initialPrompt,
       getUserInput,
       onModelInfo,
-      onModelFinal
+      onModelFinal,
     );
   }
 
-  useEffect(()=>{
-    beginChain()
-  },[])
+  useEffect(() => {
+    beginChain();
+  }, []);
 
   useEffect(() => {
-
     if (props.enabled !== isEnabled.current) {
       isEnabled.current = props.enabled;
     }
