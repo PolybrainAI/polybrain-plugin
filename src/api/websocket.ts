@@ -10,16 +10,23 @@ import { extractDocumentId, getCookie } from "./util";
 
 const bus = new EventEmitter();
 
+var message_queue: object[] = []
+
 async function waitForMessage<T>(socket: WebSocket): Promise<T> {
   var payload: T | null = null;
 
-  while (payload === null) {
-    socket.addEventListener("message", (event) => {
-      payload = JSON.parse(event.data);
-      bus.emit("recv");
-    });
-
-    await new Promise((resolve) => bus.once("recv", resolve));
+  if (message_queue.length > 0){
+    const recv = message_queue.pop();
+    payload = recv ? recv as T : null;
+  }
+  
+  // if the payload is still null, wait for a new message
+  if (payload === null){
+    while (payload === null) {
+      await new Promise((resolve) => bus.on("message", resolve));
+      const recv = message_queue.pop();
+      payload = recv ? recv as T : null;
+    }
   }
 
   console.log("Incoming ws message:");
@@ -67,6 +74,14 @@ export async function websocketListen(
 
   await new Promise((resolve) => bus.once("connected", resolve));
 
+  socket.addEventListener("message", (event) => {
+    const payload = JSON.parse(event.data);
+    if (payload !== null){
+      message_queue.push(payload)
+      bus.emit("message");
+    }
+  });
+
   console.log("connected to ws");
 
   const startRequest: SessionStartRequest = {
@@ -79,13 +94,13 @@ export async function websocketListen(
   const sessionId = startResponse.session_id;
 
   // send initial prompt
-  const intialPromptMessage: UserPromptInitial = {
+  const initialPromptMessage: UserPromptInitial = {
     contents: initialPrompt,
   };
-  await sendMessage(socket, intialPromptMessage);
+  await sendMessage(socket, initialPromptMessage);
 
   // dispatch incoming messages
-  while (socket.readyState === socket.OPEN) {
+  while (socket.readyState === socket.OPEN || message_queue.length > 0) {
     const incoming = await waitForMessage<ServerResponse>(socket);
 
     switch (incoming.response_type) {
@@ -109,5 +124,6 @@ export async function websocketListen(
     }
   }
 
+  console.log("closing connection");
   socket.close();
 }
