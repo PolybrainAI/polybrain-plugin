@@ -25,10 +25,7 @@ export default function TextMode(props: {
   const textboxRef = useRef<HTMLTextAreaElement>(null); // a reference to the textbox
 
   // Sets up a local event emitter
-  const bus = useRef<null | EventEmitter>(null);
-  useEffect(() => {
-    bus.current = new EventEmitter();
-  }, []);
+  const bus = useRef<EventEmitter>(new EventEmitter);
 
   /**
    * Appends a new message to the list of messages
@@ -37,6 +34,7 @@ export default function TextMode(props: {
   function appendMessage(msg: Message): void {
     messagesRef.current.push(msg);
     setMessages(messagesRef.current);
+    bus.current.emit("new", msg)
   }
 
   /**
@@ -171,7 +169,7 @@ export default function TextMode(props: {
           </button>
         </div>
 
-        <MessageDisplay messages={messages} />
+        <MessageDisplay messages={messages} messageEvent={bus.current} />
 
         <div
           id="chat-input"
