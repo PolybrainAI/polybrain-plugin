@@ -88,6 +88,7 @@ textarea:disabled {
 }
 
 #chat-window {
+  padding-top: 33px;
   right: 30px;
   bottom: 130px;
   position: fixed;
@@ -99,6 +100,7 @@ textarea:disabled {
 
 #chat-header {
   position: absolute;
+  top: 0px;
   background-color: #515c65;
   height: 33px;
   width: 100%;
@@ -214,6 +216,7 @@ textarea:disabled {
   min-height: 203px;
   max-height: 300px;
   /* margin-top: 33px; */
+  padding-top: 50px;
   width: 100%;
 }
 
