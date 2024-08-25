@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "../react/app";
 import { getCookie } from "../api/util";
+import { setCoreUrl } from "../api/websocket";
 
 var polybrain_attached = false;
 var react_root: HTMLDivElement | null;
@@ -79,4 +80,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     await_attach();
     sendResponse({ status: "Function executed" });
   }
+});
+
+// Set up a listener to change the core url
+chrome.storage.local.get(['coreUrl'], function(result) {
+  console.log('Using coreUrl: ', result.coreUrl);
+  setCoreUrl(result.coreUrl)
+  
+  // You can now use the input value in your content script
 });

@@ -9,8 +9,12 @@ import {
 import { extractDocumentId, getCookie } from "./util";
 
 const bus = new EventEmitter();
-
 var message_queue: object[] = [];
+var coreUrl = "wss://core.polybrain.xyz";
+
+export function setCoreUrl(url: string){
+  coreUrl = url
+}
 
 async function waitForMessage<T>(socket: WebSocket): Promise<T> {
   var payload: T | null = null;
@@ -61,7 +65,7 @@ export async function websocketListen(
   }
 
   console.log("connecting to ws...");
-  const socket = new WebSocket("ws://127.0.0.1:6379");
+  const socket = new WebSocket(coreUrl);
 
   // ensure socket closes on close
   window.addEventListener("beforeunload", () => {
