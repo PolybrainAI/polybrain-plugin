@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "../react/app";
+import { getCookie } from "../api/util";
 
 var polybrain_attached = false;
 var react_root: HTMLDivElement | null;
@@ -56,9 +57,11 @@ async function await_attach() {
   console.log("Waiting for document url...");
 
   for (let i = 0; i < 5; i++) {
-    const is_ready = extractDocumentId() !== null;
+    const hasDocumentId = extractDocumentId() !== null;
+    const hasCookie = await getCookie() !== null;
+    const isReady = hasDocumentId && hasCookie;
 
-    if (is_ready) {
+    if (isReady) {
       return await attach();
     } else {
       console.log("waiting for url update...");
