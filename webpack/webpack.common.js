@@ -1,8 +1,11 @@
 
 import path from "path";
+import { fileURLToPath } from 'url';
 import CopyPlugin from "copy-webpack-plugin";
 
-const srcDir = path.join(import.meta.dirname || "", "..", "src");
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+const srcDir = path.join(__dirname, "..", "src");
 
 export default {
   entry: {
@@ -12,7 +15,7 @@ export default {
     content_script: path.join(srcDir, "entry/content_script.tsx"),
   },
   output: {
-    path: path.resolve(import.meta.dirname || "", "../dist/js"),
+    path: path.resolve(__dirname, "../dist/js"),
     filename: "[name].js",
     publicPath: "/public/",
   },
