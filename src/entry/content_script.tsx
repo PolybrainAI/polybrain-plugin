@@ -20,12 +20,12 @@ async function attach() {
     console.log(react_root);
 
     const root = ReactDOM.createRoot(
-      document.getElementById("polybrain-assistant") as HTMLElement
+      document.getElementById("polybrain-assistant") as HTMLElement,
     );
     root.render(
       <React.StrictMode>
         <App />
-      </React.StrictMode>
+      </React.StrictMode>,
     );
 
     console.log("Attached react to root");

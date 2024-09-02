@@ -28,7 +28,7 @@ export async function getCookie(): Promise<string | null> {
           token = response.token;
           bus.emit("resolved");
         }
-      }
+      },
     );
 
     await new Promise((resolve) => bus.once("resolved", resolve));
@@ -78,7 +78,7 @@ export function extractDocumentId() {
 
 export async function tts(
   message: string,
-  onSpeakingStart: () => Promise<void>
+  onSpeakingStart: () => Promise<void>,
 ) {
   const cookie = await getCookie();
 
@@ -113,7 +113,7 @@ export function playSound(audioFile: string) {
 const SpeechRecognition = webkitSpeechRecognition;
 export async function recordAudio(
   onRecordStart: () => void,
-  waitForStop: () => Promise<void>
+  waitForStop: () => Promise<void>,
 ): Promise<string | null> {
   if (!SpeechRecognition) {
     throw new Error("Speech Recognition API is not supported in this browser.");

@@ -82,8 +82,8 @@ export default function TextMode(props: {
   async function waitForMessage(): Promise<string> {
     setTextboxAvailable(true);
     console.log("waiting for message");
-    const messageContent: string = await new Promise((resolve) =>
-      bus.current?.once("messageSent", resolve)
+    const messageContent: string = await new Promise(
+      (resolve) => bus.current?.once("messageSent", resolve),
     );
 
     setTextboxAvailable(false);
@@ -129,7 +129,7 @@ export default function TextMode(props: {
       initialPrompt,
       getUserInput,
       onModelInfo,
-      onModelFinal
+      onModelFinal,
     );
   }
 

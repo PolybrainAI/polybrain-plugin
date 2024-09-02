@@ -38,7 +38,7 @@ export default function MessageDisplay(props: {
     props.messageEvent.on("new", (msg) => {
       messages.push(msg);
       setMessageElements(
-        messages.map((message) => buildMessageElement(message))
+        messages.map((message) => buildMessageElement(message)),
       );
       setTimeout(() => {
         scrollToNewest();

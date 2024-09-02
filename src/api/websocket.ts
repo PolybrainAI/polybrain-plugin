@@ -47,7 +47,7 @@ export async function websocketListen(
   initialPrompt: string,
   getUserInput: (prompt: string) => Promise<string>,
   onModelInfo: (message: string) => Promise<void>,
-  onModelFinal: (message: string) => Promise<void>
+  onModelFinal: (message: string) => Promise<void>,
 ) {
   const userCooke = await getCookie();
   const documentId = extractDocumentId();
@@ -59,7 +59,7 @@ export async function websocketListen(
 
   if (documentId === null) {
     console.error(
-      "Unable to extract document id, stopping websocket connection"
+      "Unable to extract document id, stopping websocket connection",
     );
     return;
   }
