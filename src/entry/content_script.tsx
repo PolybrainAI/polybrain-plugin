@@ -46,7 +46,9 @@ function extractDocumentId(): string | null {
   const regex = /documents\/([a-f0-9]{24})/;
   const match = url.match(regex);
   if (match) {
-    return match[1];
+    const documentId = match[1];
+    console.log("Using document id:", documentId)
+    return documentId;
   } else {
     console.debug(`Unable to extract document id from the url ${url}`);
     return null;
