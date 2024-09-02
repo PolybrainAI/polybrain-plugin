@@ -39,7 +39,7 @@
     "service_worker": "js/background.js"
   },
 
-  "permissions": ["cookies", "storage", "tabs", "activeTab", "scripting"],
+  "permissions": ["cookies", "storage", "tabs", "activeTab"],
 
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["*://polybrain.xyz/*"]
 }

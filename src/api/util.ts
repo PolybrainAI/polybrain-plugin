@@ -22,16 +22,20 @@ export async function getCookie(): Promise<string | null> {
       { action: "fetchCookie", cookieName: "polybrain-session" },
       (response) => {
         if (response.status === "success") {
+          console.debug("successfully fetched cookie:", response);
           token = response.token;
           bus.emit("resolved");
         } else {
+          console.error("fetchCookie returned error:", response);
           token = response.token;
           bus.emit("resolved");
         }
       },
     );
-
+    
+    console.debug("waiting for cookie fetch...")
     await new Promise((resolve) => bus.once("resolved", resolve));
+    console.debug("got cookie:", token)
     window.polybrainCookie = token;
     return token;
   } else {
