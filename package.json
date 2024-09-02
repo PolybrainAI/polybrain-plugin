@@ -8,8 +8,8 @@
     "build": "webpack --config webpack/webpack.prod.js",
     "clean": "rimraf dist",
     "eslint": "npx eslint src/**/* --quiet",
-    "style": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "style-check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "style": "prettier --write \"src/**/*.{ts,tsx,css}\" \".github/workflows/*\"",
+    "style-check": "prettier --check \"src/**/*.{ts,tsx,css}\" \".github/workflows/*\""
   },
   "author": "",
   "license": "MIT",
