@@ -49,7 +49,7 @@ export function Popup() {
         >
           Log In
         </button>
-        <a href="https://polybrain.com/" target="_blank">
+        <a href="https://polybrain.xyz/" target="_blank">
           Don't have an account? Sign up
         </a>
       </div>

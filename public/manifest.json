@@ -5,6 +5,13 @@
   "description": "An OnShape plugin for AI-generated CAD",
   "version": "1.0",
 
+  "icons": {
+    "64" : "logo-circle-beta-64.png",
+    "128" : "logo-circle-beta-128.png",
+    "512" : "logo-circle-beta-512.png",
+    "1024" : "logo-circle-beta-1024.png"
+  },
+
   "options_ui": {
     "page": "options.html"
   },
