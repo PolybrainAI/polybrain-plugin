@@ -16,7 +16,7 @@ window.polybrainCookie = null;
 export async function getCookie(): Promise<string | null> {
   if (window.polybrainCookie === null) {
     const bus = new EventEmitter();
-    var token: string | null = null;
+    let token: string | null = null;
 
     chrome.runtime.sendMessage(
       { action: "fetchCookie", cookieName: "polybrain-session" },
@@ -128,11 +128,11 @@ export async function recordAudio(onRecordStart: ()=>void, waitForStop: ()=>Prom
   onRecordStart()
   playSound(startRecord);
 
-  var transcript: string|null = null;
+  let transcript: string|null = null;
 
   recognition.onresult = (event) => {
     console.log(event)
-    transcript = (!!transcript) ? transcript : "";
+    transcript = (transcript) ? transcript : "";
     transcript += event.results[event.results.length-1][0].transcript;
   };
 

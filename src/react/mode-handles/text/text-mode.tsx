@@ -144,7 +144,7 @@ export default function TextMode(props: {
   useEffect(() => {
     if (textboxRef.current !== null) {
       textboxRef.current.style.height = "auto";
-      var desiredHeight = textboxRef.current.scrollHeight;
+      let desiredHeight = textboxRef.current.scrollHeight;
       if (desiredHeight < 22) {
         desiredHeight = 22;
       }

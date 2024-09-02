@@ -32,7 +32,7 @@ export default function MessageDisplay(props: { messages: Array<Message>, messag
   
   // listen for new messages
   useEffect(()=>{
-    var messages: Message[] = []
+    const messages: Message[] = []
     props.messageEvent.on("new", (msg)=>{ 
       messages.push(msg)
       setMessageElements(
@@ -43,7 +43,7 @@ export default function MessageDisplay(props: { messages: Array<Message>, messag
   },[])
   
   function scrollToNewest() {
-    var msgDisplay = document.getElementById("chat-message-display");
+    const msgDisplay = document.getElementById("chat-message-display");
     if (msgDisplay) {
       msgDisplay.scrollTop = msgDisplay.scrollHeight;
     }

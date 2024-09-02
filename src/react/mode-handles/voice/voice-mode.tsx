@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { micIcon, speakerIcon, loadingAnim } from "../../../misc/assets";
-import { playSound, tts, recordAudio } from "../../../api/util";
+import { tts, recordAudio } from "../../../api/util";
 import { websocketListen } from "../../../api/websocket";
 import EventEmitter from "events";
 
@@ -30,7 +30,7 @@ export default function VoiceMode(props: {
   async function getUserInput(prompt: string): Promise<string> {
     await speak(prompt);
 
-    var input: string|null = null;
+    let input: string|null = null;
     
     while (input === null) {
       input = await recordAudio(

@@ -5,6 +5,19 @@ import pluginReact from "eslint-plugin-react";
 
 
 export default [
+  {
+    rules: {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_[^_].*$|^_$",
+          varsIgnorePattern: "^_[^_].*$|^_$",
+          caughtErrorsIgnorePattern: "^_[^_].*$|^_$",
+        },
+      ],
+    },
+  },
   {files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]},
   {languageOptions: { globals: globals.browser }},
   pluginJs.configs.recommended,
