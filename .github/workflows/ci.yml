@@ -10,8 +10,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Dependencies
+      - name: Install bun
         uses: oven-sh/setup-bun@v2
+
+      - name: Install Dependencies
         run: bun i
 
       - name: Run eslint
