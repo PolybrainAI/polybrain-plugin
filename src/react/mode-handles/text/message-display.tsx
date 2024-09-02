@@ -3,8 +3,10 @@ import EventEmitter from "events";
 
 import { Message } from "./text-mode";
 
-export default function MessageDisplay(props: { messages: Array<Message>, messageEvent: EventEmitter}) {
-
+export default function MessageDisplay(props: {
+  messages: Array<Message>;
+  messageEvent: EventEmitter;
+}) {
   function buildMessageElement(message: Message) {
     return (
       <div className="message-container">
@@ -29,21 +31,23 @@ export default function MessageDisplay(props: { messages: Array<Message>, messag
   const [messageElements, setMessageElements] = useState<
     React.JSX.Element[] | null
   >(null);
-  
+
   // listen for new messages
-  useEffect(()=>{
-    var messages: Message[] = []
-    props.messageEvent.on("new", (msg)=>{ 
-      messages.push(msg)
+  useEffect(() => {
+    const messages: Message[] = [];
+    props.messageEvent.on("new", (msg) => {
+      messages.push(msg);
       setMessageElements(
         messages.map((message) => buildMessageElement(message)),
       );
-      setTimeout(()=>{scrollToNewest()},100)      
-    })
-  },[])
-  
+      setTimeout(() => {
+        scrollToNewest();
+      }, 100);
+    });
+  }, []);
+
   function scrollToNewest() {
-    var msgDisplay = document.getElementById("chat-message-display");
+    const msgDisplay = document.getElementById("chat-message-display");
     if (msgDisplay) {
       msgDisplay.scrollTop = msgDisplay.scrollHeight;
     }

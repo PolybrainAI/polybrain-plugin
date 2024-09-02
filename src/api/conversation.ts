@@ -1,7 +1,7 @@
 export function startConversation(
-  onStart: () => void,
-  onInfo: (msg: string) => void,
-  getPrompt: (msg: string) => string,
+  _onStart: () => void,
+  _onInfo: (msg: string) => void,
+  _getPrompt: (msg: string) => string,
 ) {
   console.log("starting conversation...");
 }

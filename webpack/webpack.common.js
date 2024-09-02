@@ -1,9 +1,13 @@
-const webpack = require("webpack");
-const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
+
+import path from "path";
+import { fileURLToPath } from 'url';
+import CopyPlugin from "copy-webpack-plugin";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 const srcDir = path.join(__dirname, "..", "src");
 
-module.exports = {
+export default {
   entry: {
     popup: path.join(srcDir, "entry/popup.tsx"),
     options: path.join(srcDir, "entry/options.tsx"),
@@ -11,7 +15,7 @@ module.exports = {
     content_script: path.join(srcDir, "entry/content_script.tsx"),
   },
   output: {
-    path: path.join(__dirname, "../dist/js"),
+    path: path.resolve(__dirname, "../dist/js"),
     filename: "[name].js",
     publicPath: "/public/",
   },

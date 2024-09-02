@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  workflow_call:
+  pull_request:
+  push:
+    branches: ["master"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install Dependencies
+        run: bun i
+
+      - name: Run eslint
+        run: bun run eslint
+
+      - name: Run prettier
+        run: bun run style-check
+
+      - name: Run build
+        run: bun run build

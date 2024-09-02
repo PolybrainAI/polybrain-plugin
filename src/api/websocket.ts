@@ -9,15 +9,15 @@ import {
 import { extractDocumentId, getCookie } from "./util";
 
 const bus = new EventEmitter();
-var message_queue: object[] = [];
-var coreUrl = "wss://core.polybrain.xyz";
+const message_queue: object[] = [];
+export let coreUrl = "wss://core.polybrain.xyz";
 
-export function setCoreUrl(url: string){
-  coreUrl = url
+export function setCoreUrl(url: string) {
+  coreUrl = url;
 }
 
-async function waitForMessage<T>(socket: WebSocket): Promise<T> {
-  var payload: T | null = null;
+async function waitForMessage<T>(): Promise<T> {
+  let payload: T | null = null;
 
   if (message_queue.length > 0) {
     const recv = message_queue.pop();
@@ -72,7 +72,7 @@ export async function websocketListen(
     socket.close();
   });
 
-  socket.addEventListener("open", (event) => {
+  socket.addEventListener("open", () => {
     bus.emit("connected");
   });
 
@@ -94,8 +94,7 @@ export async function websocketListen(
   };
   sendMessage(socket, startRequest);
 
-  const startResponse = await waitForMessage<SessionStartResponse>(socket);
-  const sessionId = startResponse.session_id;
+  await waitForMessage<SessionStartResponse>();
 
   // send initial prompt
   const initialPromptMessage: UserPromptInitial = {
@@ -105,16 +104,17 @@ export async function websocketListen(
 
   // dispatch incoming messages
   while (socket.readyState === socket.OPEN || message_queue.length > 0) {
-    const incoming = await waitForMessage<ServerResponse>(socket);
+    const incoming = await waitForMessage<ServerResponse>();
 
     switch (incoming.response_type) {
-      case "Query":
+      case "Query": {
         const user_input = await getUserInput(incoming.content);
         const response: UserInputResponse = {
           response: user_input,
         };
         await sendMessage(socket, response);
         break;
+      }
       case "Info":
         await onModelInfo(incoming.content);
         break;

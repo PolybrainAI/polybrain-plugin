@@ -4,8 +4,8 @@ import App from "../react/app";
 import { getCookie } from "../api/util";
 import { setCoreUrl } from "../api/websocket";
 
-var polybrain_attached = false;
-var react_root: HTMLDivElement | null;
+let polybrain_attached = false;
+let react_root: HTMLDivElement | null;
 
 // Attach the polybrain assistant
 async function attach() {
@@ -59,7 +59,7 @@ async function await_attach() {
 
   for (let i = 0; i < 5; i++) {
     const hasDocumentId = extractDocumentId() !== null;
-    const hasCookie = await getCookie() !== null;
+    const hasCookie = (await getCookie()) !== null;
     const isReady = hasDocumentId && hasCookie;
 
     if (isReady) {
@@ -83,9 +83,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // Set up a listener to change the core url
-chrome.storage.local.get(['coreUrl'], function(result) {
-  console.log('Using coreUrl: ', result.coreUrl);
-  setCoreUrl(result.coreUrl)
-  
+chrome.storage.local.get(["coreUrl"], function (result) {
+  console.log("Using coreUrl: ", result.coreUrl);
+  setCoreUrl(result.coreUrl);
+
   // You can now use the input value in your content script
 });
