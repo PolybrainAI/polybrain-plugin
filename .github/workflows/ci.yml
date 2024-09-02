@@ -19,8 +19,14 @@ jobs:
         echo "PATH=\"$BUN_INSTALL/bin:$PATH\"" >> $GITHUB_ENV
       shell: bash
 
-    - name: Run linter
-      run: bun run lint
+    - name: Install Dependencies
+      run: bun i
+
+    - name: Run eslint
+      run: bun run eslint
+
+    - name: Run prettier
+      run: bun run style-check
 
     - name: Run build
       run: bun run build
