@@ -37,7 +37,7 @@ export default function App() {
   const [menuType, setMenuType] = useState<MenuState>(MenuState.Default); // type of hover menu
 
   const [selectedMode, setSelectedMode] = useState<SelectedMode>(
-    SelectedMode.None,
+    SelectedMode.None
   ); // mode of the main chain (voice, text, etc.)
 
   // Sets up a local event emitter
@@ -66,7 +66,7 @@ export default function App() {
     iconElement.style.transform = "scale(0)";
     iconElement.style.opacity = "0%";
     await new Promise((resolve) =>
-      setTimeout(resolve, ICON_TRANSITION_DURATION * 1000),
+      setTimeout(resolve, ICON_TRANSITION_DURATION * 1000)
     );
 
     setActiveIcon(iconPath); // chance icon
@@ -75,7 +75,7 @@ export default function App() {
     iconElement.style.transform = "scale(1)";
     iconElement.style.opacity = "100%";
     await new Promise((resolve) =>
-      setTimeout(resolve, ICON_TRANSITION_DURATION * 1000),
+      setTimeout(resolve, ICON_TRANSITION_DURATION * 1000)
     );
   }
 
@@ -105,7 +105,9 @@ export default function App() {
         onMouseLeave={() => {
           setButtonHovered(false);
         }}
-        onClick={()=>{bus.current?.emit('click')}}
+        onClick={() => {
+          bus.current?.emit("click");
+        }}
       >
         <img
           id="primary-button-backing"

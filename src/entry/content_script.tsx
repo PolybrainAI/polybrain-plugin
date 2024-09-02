@@ -20,12 +20,12 @@ async function attach() {
     console.log(react_root);
 
     const root = ReactDOM.createRoot(
-      document.getElementById("polybrain-assistant") as HTMLElement,
+      document.getElementById("polybrain-assistant") as HTMLElement
     );
     root.render(
       <React.StrictMode>
         <App />
-      </React.StrictMode>,
+      </React.StrictMode>
     );
 
     console.log("Attached react to root");
@@ -59,7 +59,7 @@ async function await_attach() {
 
   for (let i = 0; i < 5; i++) {
     const hasDocumentId = extractDocumentId() !== null;
-    const hasCookie = await getCookie() !== null;
+    const hasCookie = (await getCookie()) !== null;
     const isReady = hasDocumentId && hasCookie;
 
     if (isReady) {
@@ -83,9 +83,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // Set up a listener to change the core url
-chrome.storage.local.get(['coreUrl'], function(result) {
-  console.log('Using coreUrl: ', result.coreUrl);
-  setCoreUrl(result.coreUrl)
-  
+chrome.storage.local.get(["coreUrl"], function (result) {
+  console.log("Using coreUrl: ", result.coreUrl);
+  setCoreUrl(result.coreUrl);
+
   // You can now use the input value in your content script
 });

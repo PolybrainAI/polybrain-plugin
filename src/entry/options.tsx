@@ -12,23 +12,32 @@ const Options = () => {
 
   function saveChanges() {
     chrome.storage.local.set({ coreUrl: coreUrl });
-    alert("Changes saved.")
+    alert("Changes saved.");
   }
 
-  useEffect(()=>{
-    chrome.storage.local.get("coreUrl", (items)=>{
-      setCoreUrl(items["coreUrl"])
-    })
-  },[])
+  useEffect(() => {
+    chrome.storage.local.get("coreUrl", (items) => {
+      setCoreUrl(items["coreUrl"]);
+    });
+  }, []);
 
-  return <>
-    <div>
-      Core URL:
-      <input style={{width: "100%"}} type='url' value={coreUrl} onChange={(ev) => { setCoreUrl(ev.target.value) }} />
-      <br />
-      <button onClick={saveChanges}>Done</button>
-    </div>
-  </>
+  return (
+    <>
+      <div>
+        Core URL:
+        <input
+          style={{ width: "100%" }}
+          type="url"
+          value={coreUrl}
+          onChange={(ev) => {
+            setCoreUrl(ev.target.value);
+          }}
+        />
+        <br />
+        <button onClick={saveChanges}>Done</button>
+      </div>
+    </>
+  );
 };
 
 const root = createRoot(document.getElementById("root")!);
@@ -36,5 +45,5 @@ const root = createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
     <Options />
-  </React.StrictMode>,
+  </React.StrictMode>
 );

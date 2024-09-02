@@ -25,7 +25,7 @@ export default function TextMode(props: {
   const textboxRef = useRef<HTMLTextAreaElement>(null); // a reference to the textbox
 
   // Sets up a local event emitter
-  const bus = useRef<EventEmitter>(new EventEmitter);
+  const bus = useRef<EventEmitter>(new EventEmitter());
 
   /**
    * Appends a new message to the list of messages
@@ -34,7 +34,7 @@ export default function TextMode(props: {
   function appendMessage(msg: Message): void {
     messagesRef.current.push(msg);
     setMessages(messagesRef.current);
-    bus.current.emit("new", msg)
+    bus.current.emit("new", msg);
   }
 
   /**
@@ -82,8 +82,8 @@ export default function TextMode(props: {
   async function waitForMessage(): Promise<string> {
     setTextboxAvailable(true);
     console.log("waiting for message");
-    const messageContent: string = await new Promise(
-      (resolve) => bus.current?.once("messageSent", resolve),
+    const messageContent: string = await new Promise((resolve) =>
+      bus.current?.once("messageSent", resolve)
     );
 
     setTextboxAvailable(false);
@@ -129,7 +129,7 @@ export default function TextMode(props: {
       initialPrompt,
       getUserInput,
       onModelInfo,
-      onModelFinal,
+      onModelFinal
     );
   }
 

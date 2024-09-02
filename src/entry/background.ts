@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           console.log(`Can't get cookie '${message.cookieName}'!`);
           sendResponse({ status: "failed", token: null });
         }
-      },
+      }
     );
     return true;
   }

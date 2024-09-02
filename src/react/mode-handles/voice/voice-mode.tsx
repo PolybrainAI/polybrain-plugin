@@ -7,7 +7,7 @@ import EventEmitter from "events";
 export default function VoiceMode(props: {
   enabled: boolean;
   setIcon: (icon: string) => Promise<void>;
-  clickEmitter: EventEmitter|null
+  clickEmitter: EventEmitter | null;
   onReturn: () => void;
 }) {
   const isEnabled = useRef(false);
@@ -30,23 +30,25 @@ export default function VoiceMode(props: {
   async function getUserInput(prompt: string): Promise<string> {
     await speak(prompt);
 
-    let input: string|null = null;
-    
+    let input: string | null = null;
+
     while (input === null) {
       input = await recordAudio(
         // on record start
-        ()=>{
-          props.setIcon(micIcon)
+        () => {
+          props.setIcon(micIcon);
         },
-  
-        // stop record
-        async ()=>{
-          await new Promise((resolve) => props.clickEmitter?.on("click", resolve))
-        }
-      )
 
-      if (!input){
-        await speak("Hmm... Did you say something? I couldn't hear you.")
+        // stop record
+        async () => {
+          await new Promise((resolve) =>
+            props.clickEmitter?.on("click", resolve)
+          );
+        }
+      );
+
+      if (!input) {
+        await speak("Hmm... Did you say something? I couldn't hear you.");
       }
     }
 
@@ -87,7 +89,7 @@ export default function VoiceMode(props: {
       initialPrompt,
       getUserInput,
       onModelInfo,
-      onModelFinal,
+      onModelFinal
     );
   }
 

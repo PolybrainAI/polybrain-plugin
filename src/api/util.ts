@@ -28,7 +28,7 @@ export async function getCookie(): Promise<string | null> {
           token = response.token;
           bus.emit("resolved");
         }
-      },
+      }
     );
 
     await new Promise((resolve) => bus.once("resolved", resolve));
@@ -78,7 +78,7 @@ export function extractDocumentId() {
 
 export async function tts(
   message: string,
-  onSpeakingStart: () => Promise<void>,
+  onSpeakingStart: () => Promise<void>
 ) {
   const cookie = await getCookie();
 
@@ -105,18 +105,19 @@ export async function tts(
   await new Promise((resolve) => setTimeout(resolve, audio.duration * 1000));
 }
 
-
 export function playSound(audioFile: string) {
   const audio = new Audio(audioFile);
   audio.play();
 }
 
 const SpeechRecognition = webkitSpeechRecognition;
-export async function recordAudio(onRecordStart: ()=>void, waitForStop: ()=>Promise<void>): Promise<string|null> {
+export async function recordAudio(
+  onRecordStart: () => void,
+  waitForStop: () => Promise<void>
+): Promise<string | null> {
   if (!SpeechRecognition) {
-    throw new Error('Speech Recognition API is not supported in this browser.');
+    throw new Error("Speech Recognition API is not supported in this browser.");
   }
-
 
   const recognition = new SpeechRecognition();
   recognition.continuous = true;
@@ -125,43 +126,40 @@ export async function recordAudio(onRecordStart: ()=>void, waitForStop: ()=>Prom
   recognition.maxAlternatives = 1;
 
   recognition.start();
-  onRecordStart()
+  onRecordStart();
   playSound(startRecord);
 
-  let transcript: string|null = null;
+  let transcript: string | null = null;
 
   recognition.onresult = (event) => {
-    console.log(event)
-    transcript = (transcript) ? transcript : "";
-    transcript += event.results[event.results.length-1][0].transcript;
+    console.log(event);
+    transcript = transcript ? transcript : "";
+    transcript += event.results[event.results.length - 1][0].transcript;
   };
 
   recognition.onerror = (event) => {
     console.error(`error occurred in recognition: ${event.error}`);
   };
 
-  await waitForStop()
-  recognition.stop()
-  playSound(stopRecord)
- 
-  if (!transcript) {
+  await waitForStop();
+  recognition.stop();
+  playSound(stopRecord);
 
+  if (!transcript) {
     // wait a moment for transcript to come in, otherwise abort
     transcript = await new Promise((resolve) => {
-
-      setTimeout(()=>{
-        resolve(null)
-      }, 2000)
+      setTimeout(() => {
+        resolve(null);
+      }, 2000);
 
       recognition.onresult = (event) => {
         resolve(event.results[0][0].transcript);
-      }
-    })
+      };
+    });
   }
 
-  if (!transcript){
-    console.error("no audio"); 
+  if (!transcript) {
+    console.error("no audio");
   }
-  return transcript
-
+  return transcript;
 }
