@@ -41,8 +41,8 @@ export default function VoiceMode(props: {
 
         // stop record
         async () => {
-          await new Promise(
-            (resolve) => props.clickEmitter?.on("click", resolve),
+          await new Promise((resolve) =>
+            props.clickEmitter?.on("click", resolve),
           );
         },
       );
