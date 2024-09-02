@@ -12,7 +12,7 @@ export default {
     content_script: path.join(srcDir, "entry/content_script.tsx"),
   },
   output: {
-    path: path.join(import.meta.dirname || "", "../dist/js"),
+    path: path.resolve(import.meta.dirname || "", "../dist/js"),
     filename: "[name].js",
     publicPath: "/public/",
   },
