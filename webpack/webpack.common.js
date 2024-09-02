@@ -2,7 +2,7 @@
 import path from "path";
 import CopyPlugin from "copy-webpack-plugin";
 
-const srcDir = path.join(import.meta.dirname | "", "..", "src");
+const srcDir = path.join(import.meta.dirname || "", "..", "src");
 
 export default {
   entry: {
