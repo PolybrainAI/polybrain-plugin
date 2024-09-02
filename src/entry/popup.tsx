@@ -49,8 +49,8 @@ export function Popup() {
         >
           Log In
         </button>
-        <a href="https://polybrain.xyz/" target="_blank">
-          Don't have an account? Sign up
+        <a href="https://polybrain.xyz/" target="_blank" rel="noreferrer">
+          Don&apos;t have an account? Sign up
         </a>
       </div>
     );

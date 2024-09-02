@@ -10,7 +10,6 @@ import { baseButton, logoNoBackground } from "../misc/assets";
 import HoverMenu from "./compnents/hover-menu";
 import VoiceMode from "./mode-handles/voice/voice-mode";
 import TextMode from "./mode-handles/text/text-mode";
-import { websocketListen } from "../api/websocket";
 import EventEmitter from "events";
 
 export type setFunction<T> = (state: T) => void;

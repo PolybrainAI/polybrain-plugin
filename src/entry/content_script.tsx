@@ -4,8 +4,8 @@ import App from "../react/app";
 import { getCookie } from "../api/util";
 import { setCoreUrl } from "../api/websocket";
 
-var polybrain_attached = false;
-var react_root: HTMLDivElement | null;
+let polybrain_attached = false;
+let react_root: HTMLDivElement | null;
 
 // Attach the polybrain assistant
 async function attach() {
