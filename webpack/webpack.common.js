@@ -1,9 +1,10 @@
-const webpack = require("webpack");
-const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
-const srcDir = path.join(__dirname, "..", "src");
 
-module.exports = {
+import path from "path";
+import CopyPlugin from "copy-webpack-plugin";
+
+const srcDir = path.join(import.meta.dirname, "..", "src");
+
+export default {
   entry: {
     popup: path.join(srcDir, "entry/popup.tsx"),
     options: path.join(srcDir, "entry/options.tsx"),
@@ -11,7 +12,7 @@ module.exports = {
     content_script: path.join(srcDir, "entry/content_script.tsx"),
   },
   output: {
-    path: path.join(__dirname, "../dist/js"),
+    path: path.join(import.meta.dirname, "../dist/js"),
     filename: "[name].js",
     publicPath: "/public/",
   },
