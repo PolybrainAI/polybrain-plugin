@@ -10,16 +10,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Bun
-        run: curl -fsSL https://bun.sh/install | bash
-
-      - name: Set up Bun environment
-        run: |
-          echo "BUN_INSTALL=\"$HOME/.bun\"" >> $GITHUB_ENV
-          echo "PATH=\"$BUN_INSTALL/bin:$PATH\"" >> $GITHUB_ENV
-        shell: bash
-
       - name: Install Dependencies
+        uses: oven-sh/setup-bun@v2
         run: bun i
 
       - name: Run eslint
